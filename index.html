@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Usambara Male Hostels — Live System</title>
+<style>
+  :root{ --green:#0e7a4d; --green-d:#0a5c39; --green-l:#e5f4ec; --gold:#c9a227;
+    --ink:#1c2b24; --muted:#5c6b62; --line:#dce6df; --red:#c0392b; --red-l:#fbe9e7;
+    --blue:#1d6fa5; --blue-l:#e8f2fa; --whatsapp:#25D366; }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:'Segoe UI',system-ui,Arial,sans-serif; background:#f2f6f3; color:var(--ink); line-height:1.5;}
+  header{background:linear-gradient(120deg,var(--green),var(--green-d)); color:#fff; padding:18px 20px;}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 16px;}
+  header .wrap{display:flex; align-items:center; gap:14px; flex-wrap:wrap;}
+  .badge{width:50px;height:50px;border-radius:12px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:24px;}
+  header h1{font-size:21px;}
+  header p{opacity:.92; font-size:13px; margin-top:2px;}
+  nav{margin-left:auto; display:flex; gap:8px; flex-wrap:wrap;}
+  nav button{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);color:#fff;padding:9px 14px;border-radius:8px;cursor:pointer;font-weight:600;font-size:13px;}
+  nav button.active{background:#fff;color:var(--green);}
+  nav button:hover{background:rgba(255,255,255,.3);}
+  main{padding:22px 0 60px;}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+  .card h2{font-size:17px;margin-bottom:14px;color:var(--green-d);}
+  .hidden{display:none;}
+  .btn{background:var(--green);color:#fff;border:none;border-radius:8px;padding:10px 16px;cursor:pointer;font-weight:600;font-size:14px;}
+  .btn:hover{background:var(--green-d);}
+  .btn.gold{background:var(--gold);}
+  .btn.gold:hover{background:#a98a1f;}
+  .btn.ghost{background:#fff;color:var(--green);border:1px solid var(--green);}
+  .btn.ghost:hover{background:var(--green-l);}
+  .btn.danger{background:var(--red);}
+  .btn.danger:hover{background:#a03126;}
+  .btn.sm{padding:6px 11px;font-size:12.5px;}
+  .btn.wa{background:var(--whatsapp);}
+  .btn.wa:hover{background:#1ebe57;}
+  input,select,textarea,button{font-size:14px;}
+  input[type=text],input[type=password],input[type=number],input[type=tel],select,textarea{
+    border:1px solid var(--line);border-radius:8px;padding:9px 11px;background:#fff;width:100%;}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--green-l);border-color:var(--green);}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .field label{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margin:10px 0 5px;}
+  .hint{font-size:12px;color:var(--muted);margin-top:10px;}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  th,td{padding:10px 9px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top;}
+  th{background:#f7faf8;color:var(--green-d);font-size:12px;text-transform:uppercase;letter-spacing:.4px;}
+  tr:hover td{background:#fbfdfc;}
+  .tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;}
+  .tag.b2{background:#e3f2fd;color:#0d47a1;} .tag.b3{background:#e8f5e9;color:#1b5e20;}
+  .tag.b4{background:#fff3e0;color:#e65100;} .tag.b5{background:#f3e5f5;color:#6a1b9a;}
+  .tag.open{background:var(--blue-l);color:var(--blue);} .tag.done{background:var(--green-l);color:var(--green-d);}
+  .actions{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap;}
+  .report{border:1px solid var(--line);border-radius:12px;padding:13px;margin-bottom:10px;background:#fff;}
+  .report .top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:6px;}
+  .report .who{font-weight:700;} .report .when{font-size:12px;color:var(--muted);}
+  .report p{font-size:13.5px;margin:6px 0;}
+  .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 18px;border-radius:9px;font-size:13.5px;box-shadow:0 4px 14px rgba(0,0,0,.2);opacity:0;transition:.25s;z-index:50;pointer-events:none;}
+  .toast.show{opacity:1;}
+  .empty{text-align:center;color:var(--muted);padding:26px 10px;font-size:14px;}
+  footer{color:var(--muted);font-size:12.5px;text-align:center;padding:18px 0 30px;}
+  .tabs{display:flex;gap:8px;margin-bottom:16px;}
+  .tab{padding:10px 16px;border-radius:9px;cursor:pointer;font-weight:600;background:#eef2f0;color:var(--muted);border:1px solid var(--line);}
+  .tab.active{background:var(--green);color:#fff;border-color:var(--green);}
+  .login-card{max-width:440px;margin:40px auto;}
+  .login-card h2{text-align:center;}
+  .error{background:var(--red-l);color:var(--red);padding:9px 12px;border-radius:8px;font-size:13px;margin-top:10px;}
+  .welcome{background:var(--green-l);border:1px solid #c3e6d3;color:var(--green-d);padding:10px 14px;border-radius:10px;font-size:13.5px;margin-bottom:16px;}
+  .who-box{border:1px solid var(--line);border-radius:12px;padding:16px;background:#f7faf8;margin-bottom:16px;}
+  .who-box .lbl{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px;}
+  .who-box .val{font-size:16px;font-weight:700;margin-top:3px;}
+  @media(max-width:720px){.grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="badge">🏠</div>
+    <div>
+      <h1>USAMBARA MALE HOSTELS</h1>
+      <p>Live Records &amp; Reporting · Overseer: Congressman <b>Collins Unguku</b> (WhatsApp 0769679217)</p>
+    </div>
+    <nav id="nav" class="hidden">
+      <button data-view="home">🏠 Home</button>
+      <button data-view="student" class="hidden">My Record</button>
+      <button data-view="records" class="hidden">Records</button>
+      <button data-view="reports" class="hidden">Reports</button>
+      <button data-view="reviews" class="hidden">⭐ Reviews</button>
+      <button data-view="settings" class="hidden">Settings</button>
+      <button id="logoutBtn">Logout</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="offlineBanner" class="hidden" style="background:var(--red-l);border:1px solid #f2c1bb;color:var(--red);padding:12px 15px;border-radius:10px;font-size:13.5px;margin-bottom:16px;">
+    ⚠️ <b>This preview is offline.</b> The login only works when the app is opened through its <b>live server link</b> (the running "Usambara live server" preview), not as a plain file. If you're already on the live link, the server may still be starting — wait a moment and refresh.
+  </div>
+
+
+  <!-- HOME / LANDING -->
+  <section id="homeView">
+    <div class="card" style="text-align:center;padding:40px 20px;">
+      <div style="font-size:60px;">🏠</div>
+      <h1 style="font-size:28px;color:var(--green-d);margin:10px 0 6px;">USAMBARA MALE HOSTELS</h1>
+      <p style="color:var(--muted);font-size:16px;max-width:640px;margin:0 auto;">
+        Student Records &amp; Problem Reporting System · Blocks 2, 3, 4 &amp; 5
+      </p>
+      <p style="margin-top:14px;color:var(--ink);">
+        Overseer: <b>Congressman Collins Unguku</b> · WhatsApp <b>0769679217</b>
+      </p>
+      <div id="homeActions" style="margin-top:22px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <button class="btn gold" onclick="showLogin()">🔐 Sign In</button>
+        <button class="btn ghost" onclick="document.getElementById('aboutSection').scrollIntoView({behavior:'smooth'})">About the Overseer</button>
+      </div>
+    </div>
+
+    <!-- About the Overseer -->
+    <div class="card" id="aboutSection" style="margin-top:16px;">
+      <h2>👤 About Congressman Collins Unguku</h2>
+      <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;">
+        <div style="flex:1 1 420px;min-width:280px;">
+          <p style="margin-bottom:10px;">
+            <b>Congressman Collins Unguku</b> is the Overseer of <b>Usambara Male Hostels</b>,
+            responsible for the welfare, records and discipline of all students housed in
+            Blocks 2, 3, 4 and 5.
+          </p>
+          <p style="margin-bottom:10px;">
+            As Overseer, he keeps and updates every student's record, issues login PINs, and is
+            the direct point of contact for any problem or complaint a student may have during
+            their stay. He receives all reports and responds to students directly — including
+            through WhatsApp on <b>0769679217</b>.
+          </p>
+          <div class="who-box">
+            <div class="lbl">Role</div><div class="val">Overseer · Usambara Male Hostels</div>
+            <div class="lbl" style="margin-top:8px;">Contact</div><div class="val">WhatsApp 0769679217</div>
+            <div class="lbl" style="margin-top:8px;">Responsible for</div><div class="val">Blocks 2, 3, 4 &amp; 5</div>
+          </div>
+          <p style="font-size:13px;color:var(--muted);">
+            Have a problem? Sign in as a student and submit a report, or message the Overseer
+            directly on WhatsApp using the button below.
+          </p>
+          <button class="btn wa" style="margin-top:12px;" onclick="openWa('254769679217','Hello '+OVERSEER_NAME+', I have a question regarding Usambara Male Hostels.')">💬 Message the Overseer on WhatsApp</button>
+        </div>
+        <div style="flex:1 1 300px;min-width:220px;">
+          <img src="collins_poster_design2.png" alt="Congressman Collins Unguku" style="width:100%;border-radius:12px;border:1px solid var(--line);box-shadow:0 2px 8px rgba(0,0,0,.08);">
+        </div>
+      </div>
+    </div>
+
+    <!-- Posters gallery -->
+    <div class="card" style="margin-top:16px;">
+      <h2>🖼️ The Hostel at a Glance</h2>
+      <div style="display:flex;gap:18px;flex-wrap:wrap;justify-content:center;">
+        <img src="collins_poster_design4.png" alt="Poster 1" style="height:340px;max-width:100%;border-radius:12px;border:1px solid var(--line);box-shadow:0 2px 8px rgba(0,0,0,.08);">
+        <img src="collins_poster_design2.png" alt="Poster 2" style="height:340px;max-width:100%;border-radius:12px;border:1px solid var(--line);box-shadow:0 2px 8px rgba(0,0,0,.08);">
+      </div>
+    </div>
+  </section>
+
+  <!-- LOGIN -->
+  <section id="loginView" class="hidden">
+    <div class="card login-card">
+      <h2>🔐 Sign In</h2>
+      <div class="tabs">
+        <div class="tab active" id="tabOverseer" onclick="pickLogin('overseer')">Overseer</div>
+        <div class="tab" id="tabStudent" onclick="pickLogin('student')">Student</div>
+      </div>
+      <!-- overseer login -->
+      <form id="loginOverseerForm">
+        <div class="field"><label>Overseer Password</label>
+          <input type="password" id="ovPassword" placeholder="Enter overseer password" required></div>
+        <button type="submit" class="btn" style="width:100%;margin-top:16px;">Log in as Overseer</button>
+      </form>
+      <!-- student login -->
+      <form id="loginStudentForm" class="hidden">
+        <div class="field"><label>Reg / Admission No.</label>
+          <input type="text" id="stReg" placeholder="e.g. SU/2023/0456" required></div>
+        <div class="field"><label>PIN</label>
+          <input type="password" id="stPin" placeholder="Your PIN (issued by the overseer)" required></div>
+        <button type="submit" class="btn" style="width:100%;margin-top:16px;">Log in as Student</button>
+      </form>
+      <div class="error hidden" id="loginError"></div>
+      <div class="hint">Students: your PIN is issued by the overseer (Congressman Collins Unguku). Students can only view their own record and submit reports.</div>
+    </div>
+  </section>
+
+  <!-- STUDENT DASHBOARD -->
+  <section id="studentView" class="hidden">
+    <div class="welcome" id="stuWelcome"></div>
+
+    <!-- own record -->
+    <div class="card" style="margin-bottom:16px;">
+      <h2>My Record</h2>
+      <div class="grid" id="stuRecord"></div>
+      <div class="hint">This is read-only. To change any detail, contact the overseer on WhatsApp.</div>
+    </div>
+
+    <!-- submit report -->
+    <div class="card" style="margin-bottom:16px;">
+      <h2>📢 Report a Problem to Congressman Collins Unguku</h2>
+      <form id="studentReportForm">
+        <div class="field"><label>Problem / Complaint *</label>
+          <textarea id="stuMsg" rows="3" required placeholder="Describe the issue, e.g. broken water pipe, electricity outage, leaking roof..."></textarea></div>
+        <div class="field"><label>Urgency</label>
+          <select id="stuUrg"><option value="Normal">Normal</option><option value="Urgent">🔴 Urgent</option><option value="Emergency">🚨 Emergency</option></select></div>
+        <button type="submit" class="btn gold" style="margin-top:12px;">Submit Report</button>
+      </form>
+      <button class="btn wa sm" style="margin-top:14px;" onclick="waContactOverseer()">💬 Also message the Overseer on WhatsApp</button>
+    </div>
+
+    <!-- my reports -->
+    <div class="card">
+      <h2>My Submitted Reports</h2>
+      <div id="stuReportsList"></div>
+      <div class="empty hidden" id="stuReportsEmpty">You have not submitted any reports yet.</div>
+    </div>
+  </section>
+
+  <!-- OVERSEER: RECORDS -->
+  <section id="recordsView" class="hidden">
+    <div class="card">
+      <div class="toolbar" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
+        <button class="btn gold sm" onclick="openAdd()">＋ Add Student</button>
+        <button class="btn ghost sm" onclick="backup()">💾 Backup</button>
+        <button class="btn ghost sm" onclick="exportCSV()">📄 Export CSV</button>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
+        <input type="text" id="searchBox" placeholder="🔍 Search name, reg, room, phone..." oninput="renderRecords()" style="max-width:320px;">
+        <select id="filterBlock" onchange="renderRecords()" style="max-width:160px;">
+          <option value="">All blocks</option><option value="2">Block 2</option><option value="3">Block 3</option>
+          <option value="4">Block 4</option><option value="5">Block 5</option>
+        </select>
+      </div>
+      <h2>Student Records</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Name</th><th>Reg No.</th><th>Block</th><th>Room</th><th>Room Type</th><th>Phone</th><th>Guardian</th><th>PIN</th><th>Actions</th></tr></thead>
+        <tbody id="recordsBody"></tbody>
+      </table></div>
+      <div class="empty hidden" id="recordsEmpty">No students found.</div>
+    </div>
+  </section>
+
+  <!-- OVERSEER: REPORTS -->
+  <section id="reportsView" class="hidden">
+    <div class="card">
+      <h2>📋 Problem Log — Congressman Collins Unguku</h2>
+      <div id="reportsList"></div>
+      <div class="empty hidden" id="reportsEmpty">No reports yet.</div>
+    </div>
+  </section>
+
+  <!-- REVIEWS -->
+  <section id="reviewsView" class="hidden">
+    <div class="grid">
+      <!-- submit review -->
+      <div class="card">
+        <h2>⭐ Rate Usambara Male Hostels</h2>
+        <div class="field"><label>Your Star Rating</label>
+          <div id="starInput" style="font-size:34px;cursor:pointer;letter-spacing:6px;color:#d8a500;line-height:1.2;">
+            <span onclick="setRating(1)">☆</span><span onclick="setRating(2)">☆</span><span onclick="setRating(3)">☆</span><span onclick="setRating(4)">☆</span><span onclick="setRating(5)">☆</span>
+          </div>
+          <div class="hint" id="ratingLabel">Select 1–5 stars</div>
+        </div>
+        <div class="field"><label>Your Comment</label>
+          <textarea id="revComment" rows="3" placeholder="Share your experience at the hostel..."></textarea></div>
+        <button class="btn gold" style="margin-top:12px;" onclick="submitReview()">Submit Review</button>
+        <div class="error hidden" id="revError" style="margin-top:10px;"></div>
+      </div>
+
+      <!-- list of reviews -->
+      <div class="card">
+        <h2>Student Reviews</h2>
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;padding:12px;background:#f7faf8;border:1px solid var(--line);border-radius:12px;">
+          <div style="font-size:38px;font-weight:800;color:var(--green-d);" id="avgRating">–</div>
+          <div>
+            <div id="avgStars" style="color:#d8a500;font-size:20px;letter-spacing:3px;">☆☆☆☆☆</div>
+            <div class="hint" style="margin:0;" id="avgCount">based on 0 reviews</div>
+          </div>
+        </div>
+        <div id="reviewsList"></div>
+        <div class="empty hidden" id="reviewsEmpty">No reviews yet. Be the first to review!</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OVERSEER: SETTINGS -->
+  <section id="settingsView" class="hidden">
+    <div class="card" style="max-width:520px;">
+      <h2>⚙️ Overseer Settings</h2>
+      <form id="changePassForm">
+        <div class="field"><label>Current Password</label><input type="password" id="curPass" required></div>
+        <div class="field"><label>New Password</label><input type="password" id="newPass" required></div>
+        <button type="submit" class="btn">Change Overseer Password</button>
+      </form>
+      <div class="hint" style="margin-top:16px;">Students are given their PIN by you when you add them. You can reset a student's PIN from the Records tab.</div>
+    </div>
+  </section>
+
+  <!-- STUDENT ADD/EDIT MODAL -->
+  <div id="modalBg" class="hidden" style="position:fixed;inset:0;background:rgba(12,30,22,.5);align-items:center;justify-content:center;padding:16px;z-index:60;">
+    <div class="modal" style="background:#fff;border-radius:14px;max-width:540px;width:100%;padding:22px;">
+      <h3 id="modalTitle" style="color:var(--green-d);margin-bottom:14px;">Add Student</h3>
+      <form id="studentForm">
+        <div class="grid">
+          <div class="field"><label>Full Name *</label><input type="text" id="fName" required></div>
+          <div class="field"><label>Reg / Adm No. *</label><input type="text" id="fReg" required></div>
+          <div class="field"><label>Block *</label>
+            <select id="fBlock" required><option value="">Select</option><option value="2">Block 2</option><option value="3">Block 3</option><option value="4">Block 4</option><option value="5">Block 5</option></select></div>
+          <div class="field"><label>Room *</label><input type="text" id="fRoom" required></div>
+          <div class="field"><label>Room Type</label>
+            <select id="fRoomType"><option value="">Select</option><option value="Single">Single</option><option value="Double">Double</option><option value="Quad">Quad</option><option value="Hexagon">Hexagon</option><option value="Others">Others</option></select></div>
+          <div class="field"><label>Phone</label><input type="tel" id="fPhone"></div>
+          <div class="field"><label>Guardian Name</label><input type="text" id="fGuardian"></div>
+        </div>
+        <div class="field"><label>Guardian Phone</label><input type="tel" id="fGuardianPhone"></div>
+        <div class="field"><label>PIN (4+ digits) *</label>
+          <input type="password" id="fPin" required placeholder="Set the student's login PIN"><br>
+          <span class="hint">Leave the PIN field blank when editing a student to keep the current PIN.</span></div>
+        <div style="margin-top:16px;display:flex;gap:10px;">
+          <button type="submit" class="btn" id="submitBtn">Save</button>
+          <button type="button" class="btn ghost" onclick="closeModal()">Cancel</button>
+          <button type="button" class="btn danger" id="deleteBtn" style="margin-left:auto;" onclick="delStudent()">Delete</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</main>
+
+<footer class="wrap">Usambara Male Hostels · Blocks 2, 3, 4 &amp; 5 · Overseer: Congressman Collins Unguku · Secure live system — students cannot alter records</footer>
+<div id="toast" class="toast"></div>
+
+<script>
+/* ---------------- Config ---------------- */
+var OVERSEER_NAME = 'Congressman Collins Unguku';
+var OVERSEER_DISPLAY = '0769679217';
+var OVERSEER_WHATSAPP = '254769679217';
+
+/* Safe storage — never throws (localStorage can be blocked in sandboxed previews) */
+var store = {
+  get: function(k){ try { return window.localStorage.getItem(k); } catch(e){ return null; } },
+  set: function(k,v){ try { window.localStorage.setItem(k,v); } catch(e){} },
+  del: function(k){ try { window.localStorage.removeItem(k); } catch(e){} }
+};
+function waNum(n){ n=String(n||'').replace(/[^\d]/g,''); if(n.length===9)n='254'+n; else if(n.length===10&&n[0]==='0')n='254'+n.slice(1); return n; }
+function openWa(num,text){ var url='https://wa.me/'+num+'?text='+encodeURIComponent(text||''); try{var w=window.open(url,'_blank'); if(w)w.focus();}catch(e){window.location.href=url;} }
+
+var token = store.get('umh_token') || '';
+var role = null;
+var me = null;
+var serverReachable = null; // null=unknown, true/false after connectivity check
+
+/* Instant connectivity probe — sets serverReachable so login never hangs on "Connecting…" */
+function probeServer(){
+  var ctrl = new AbortController();
+  var timer = setTimeout(function(){ ctrl.abort(); }, 5000);
+  fetch('/api/me', { signal: ctrl.signal }).then(function(){
+    clearTimeout(timer); serverReachable = true;
+  }).catch(function(){
+    clearTimeout(timer); serverReachable = false;
+    showOfflineBanner();
+  });
+}
+function showOfflineBanner(){
+  var b=document.getElementById('offlineBanner');
+  if(b){ b.classList.remove('hidden'); b.style.display='block'; }
+}
+
+/* ---------------- API helper (with connection timeout so it never hangs) ---------------- */
+var API_TIMEOUT = 12000; // ms: fail fast instead of spinning on "Connecting…"
+function api(path, opts){
+  opts = opts || {};
+  var init = { method: opts.method || 'GET' };
+  init.headers = Object.assign({ 'Content-Type':'application/json' }, opts.headers || {});
+  if(token) init.headers['Authorization'] = 'Bearer '+token;
+  if(opts.body !== undefined) init.body = JSON.stringify(opts.body);
+  var ctrl = new AbortController();
+  init.signal = ctrl.signal;
+  var timer = setTimeout(function(){ ctrl.abort(); }, API_TIMEOUT);
+  return fetch(path, init)
+    .then(function(res){
+      return res.text().then(function(t){
+        var d = {};
+        try { d = JSON.parse(t); } catch(e){ d = {}; }
+        if(!res.ok){ throw new Error(d.error || 'Server error ('+res.status+')'); }
+        return d;
+      });
+    })
+    .catch(function(err){
+      if(err && err.name==='AbortError'){
+        throw new Error('The server took too long to respond. Check the connection and try again.');
+      }
+      throw err;
+    })
+    .finally(function(){ clearTimeout(timer); });
+}
+
+/* ---------------- Auth / boot ---------------- */
+function pickLogin(which){
+  document.getElementById('tabOverseer').classList.toggle('active', which==='overseer');
+  document.getElementById('tabStudent').classList.toggle('active', which==='student');
+  document.getElementById('loginOverseerForm').classList.toggle('hidden', which!=='overseer');
+  document.getElementById('loginStudentForm').classList.toggle('hidden', which!=='student');
+  hideErr();
+}
+
+function guardLogin(){
+  // If we already know the server is unreachable, tell the user immediately.
+  if(serverReachable === false){
+    showErr(new Error('OFFLINE')); // handled in showErr with a clear message
+    return false;
+  }
+  // If the probe is still pending, don't wait on it — just attempt the real request.
+  return true;
+}
+
+document.getElementById('loginOverseerForm').addEventListener('submit', function(e){
+  e.preventDefault(); hideErr();
+  if(!guardLogin()) return;
+  var btn=e.target.querySelector('button[type=submit]'); busy(btn);
+  var pw = document.getElementById('ovPassword').value;
+  api('/api/login/overseer', { method:'POST', body:{ password:pw } })
+    .then(function(d){
+      token=d.token; role='overseer'; me=null;
+      store.set('umh_token',token);
+      showOverseer();                 // go straight to dashboard — no extra round-trip
+    })
+    .catch(function(err){ btn.disabled=false; btn.textContent='Log in as Overseer'; showErr(err); });
+});
+
+document.getElementById('loginStudentForm').addEventListener('submit', function(e){
+  e.preventDefault(); hideErr();
+  if(!guardLogin()) return;
+  var btn=e.target.querySelector('button[type=submit]'); busy(btn);
+  api('/api/login/student', { method:'POST', body:{ reg: document.getElementById('stReg').value, pin: document.getElementById('stPin').value } })
+    .then(function(d){
+      token=d.token; role='student'; me=d.student;
+      store.set('umh_token',token);
+      showStudent();                  // go straight to dashboard — no extra round-trip
+    })
+    .catch(function(err){ btn.disabled=false; btn.textContent='Log in as Student'; showErr(err); });
+});
+
+function showErr(err){
+  var el=document.getElementById('loginError'); el.classList.remove('hidden');
+  var msg = err && err.message ? err.message : 'Login failed';
+  var m = String(err && err.message ? err.message : '');
+  if(m === 'OFFLINE' || err && err.name==='AbortError'){
+    msg = '❌ The app cannot reach the server from this screen. ' +
+          'This usually means you are viewing a copied/plain file, not the LIVE app. ' +
+          'Open the LIVE preview (the panel showing the running "Usambara live server"), ' +
+          'or use your public hosted link after deploying.';
+  }
+  else if(err && (err.name==='TypeError' || /failed to fetch|networkerror|load failed/i.test(m))){
+    msg = '❌ Cannot reach the server. Open this through the LIVE preview (running server) ' +
+          'or your deployed public link — not as a plain file. If on the live link, wait for the server and refresh.';
+  }
+  el.textContent = msg;
+  showOfflineBanner();
+  document.querySelectorAll('button[type=submit]').forEach(function(b){ b.disabled=false; b.textContent=b.dataset.orig; });
+}
+function hideErr(){ document.getElementById('loginError').classList.add('hidden'); }
+function busy(btn){
+  if(!btn.dataset.orig) btn.dataset.orig = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Connecting…';
+}
+
+
+function boot(){
+  if(!token){ showHome(); return; }
+  api('/api/me').then(function(d){
+    role = d.role;
+    me = d.student || null;
+    if(role==='overseer') showOverseer(); else if(role==='student') showStudent();
+  }).catch(function(){ store.del('umh_token'); token=''; showHome(); });
+}
+
+function hideAllViews(){
+  ['home','login','student','records','reports','reviews','settings'].forEach(function(v){
+    document.getElementById(v+'View').classList.add('hidden');
+  });
+}
+
+function showHome(){
+  role=null; me=null;
+  hideAllViews();
+  document.getElementById('homeView').classList.remove('hidden');
+  document.getElementById('nav').classList.add('hidden');
+  // adapt the Home page CTA depending on login state
+  var act = document.getElementById('homeActions');
+  if(act){
+    if(token && role){
+      act.innerHTML = '<button class="btn gold" onclick="switchView(\'records\')">Open Dashboard</button>'
+        + '<button class="btn ghost" onclick="document.getElementById(\'aboutSection\').scrollIntoView({behavior:\'smooth\'})">About the Overseer</button>';
+    } else {
+      act.innerHTML = '<button class="btn gold" onclick="showLogin()">🔐 Sign In</button>'
+        + '<button class="btn ghost" onclick="document.getElementById(\'aboutSection\').scrollIntoView({behavior:\'smooth\'})">About the Overseer</button>';
+    }
+  }
+}
+
+function showLogin(){
+  role=null; me=null;
+  hideAllViews();
+  document.getElementById('loginView').classList.remove('hidden');
+  document.getElementById('nav').classList.add('hidden');
+}
+
+function showOverseer(){
+  hideAllViews();
+  document.getElementById('nav').classList.remove('hidden');
+  document.querySelectorAll('#nav button').forEach(function(b){ b.classList.add('hidden'); });
+  document.querySelector('#nav button[data-view="home"]').classList.remove('hidden');
+  document.querySelector('#nav button[data-view="records"]').classList.remove('hidden');
+  document.querySelector('#nav button[data-view="reports"]').classList.remove('hidden');
+  document.querySelector('#nav button[data-view="reviews"]').classList.remove('hidden');
+  document.querySelector('#nav button[data-view="settings"]').classList.remove('hidden');
+  switchView('records');
+}
+
+function showStudent(){
+  hideAllViews();
+  document.getElementById('nav').classList.remove('hidden');
+  document.querySelectorAll('#nav button').forEach(function(b){ b.classList.add('hidden'); });
+  document.querySelector('#nav button[data-view="home"]').classList.remove('hidden');
+  document.querySelector('#nav button[data-view="student"]').classList.remove('hidden');
+  document.querySelector('#nav button[data-view="reviews"]').classList.remove('hidden');
+  renderStudent();
+  switchView('student');
+}
+
+function switchView(view){
+  hideAllViews();
+  document.getElementById(view+'View').classList.remove('hidden');
+  document.querySelectorAll('#nav button[data-view]').forEach(function(b){
+    b.classList.toggle('active', b.dataset.view===view);
+  });
+  if(view==='records') loadStudents();   // fetch + render the student records
+  if(view==='reports') loadReports();    // fetch + render the reports log
+  if(view==='reviews') loadReviews();    // fetch + render the reviews
+  if(view==='settings') document.getElementById('changePassForm').reset();
+  if(view==='home'){ var act=document.getElementById('homeActions'); if(act){ act.innerHTML = (role&&token)
+      ? '<button class="btn gold" onclick="switchView(\'records\')">Open Dashboard</button>'
+        + '<button class="btn ghost" onclick="document.getElementById(\'aboutSection\').scrollIntoView({behavior:\'smooth\'})">About the Overseer</button>'
+      : '<button class="btn gold" onclick="showLogin()">🔐 Sign In</button>'
+        + '<button class="btn ghost" onclick="document.getElementById(\'aboutSection\').scrollIntoView({behavior:\'smooth\'})">About the Overseer</button>'; } }
+  window.scrollTo({top:0});
+}
+document.getElementById('nav').addEventListener('click', function(e){
+  var b=e.target.closest('button'); if(!b) return;
+  if(b.id==='logoutBtn'){ token=''; store.del('umh_token'); showLogin(); }
+  else if(b.dataset.view){ switchView(b.dataset.view); }
+});
+
+/* ---------------- Student dashboard ---------------- */
+function renderStudent(){
+  document.getElementById('stuWelcome').textContent = 'Welcome, '+me.name+' ('+me.reg+') — Block '+me.block+' · Room '+me.room+'. You can view your record and submit reports below.';
+  var html = [
+    ['Full Name', me.name], ['Reg / Adm No.', me.reg], ['Block', 'Block '+me.block],
+    ['Room', me.room], ['Room Type', me.roomType||'—'], ['Phone', me.phone||'—'], ['Guardian', me.guardian||'—'],
+    ['Guardian Phone', me.guardianPhone||'—']
+  ].map(function(r){ return '<div><div class="who-box"><div class="lbl">'+r[0]+'</div><div class="val">'+esc(r[1])+'</div></div></div>'; }).join('');
+  document.getElementById('stuRecord').innerHTML = html;
+  loadMyReports();
+}
+function loadMyReports(){
+  api('/api/reports/mine').then(function(d){
+    var el=document.getElementById('stuReportsList');
+    var empty=document.getElementById('stuReportsEmpty');
+    el.innerHTML='';
+    if(!d.reports.length){ empty.classList.remove('hidden'); return; }
+    empty.classList.add('hidden');
+    d.reports.forEach(function(r){
+      var when=new Date(r.date).toLocaleDateString()+' '+new Date(r.date).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+      var st = r.status==='done' ? '<span class="tag done">Resolved</span>' : '<span class="tag open">Open</span>';
+      var urg = r.urg==='Emergency' ? '🚨' : r.urg==='Urgent' ? '🔴' : '';
+      el.innerHTML += '<div class="report"><div class="top"><div>'+urg+' '+st+'</div><span class="when">'+when+'</span></div>'
+        + '<p>'+esc(r.msg)+'</p></div>';
+    });
+  }).catch(toastErr);
+}
+document.getElementById('studentReportForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  api('/api/reports', { method:'POST', body:{ msg: document.getElementById('stuMsg').value, urg: document.getElementById('stuUrg').value } })
+    .then(function(){ toast('Report submitted to the Overseer. ✅'); document.getElementById('studentReportForm').reset(); loadMyReports(); })
+    .catch(toastErr);
+});
+function waContactOverseer(){ openWa(OVERSEER_WHATSAPP, 'Hello '+OVERSEER_NAME+', I am a student at Usambara Male Hostels. My issue: '); }
+
+/* ---------------- Overseer: records ---------------- */
+var students = [];
+function renderRecords(){
+  var q=(document.getElementById('searchBox').value||'').toLowerCase();
+  var fb=document.getElementById('filterBlock').value;
+  var list=students.filter(function(s){
+    if(fb && String(s.block)!==fb) return false;
+    if(q && ((s.name+' '+(s.reg||'')+' '+(s.room||'')+' '+(s.phone||'')).toLowerCase().indexOf(q)===-1)) return false;
+    return true;
+  }).sort(function(a,b){ return (a.block-b.block)||(a.name||'').localeCompare(b.name||''); });
+  var body=document.getElementById('recordsBody');
+  var empty=document.getElementById('recordsEmpty');
+  body.innerHTML='';
+  if(!list.length){ empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+  list.forEach(function(s){
+    var tr=document.createElement('tr');
+    tr.innerHTML='<td><b>'+esc(s.name)+'</b></td><td>'+esc(s.reg)+'</td>'
+      +'<td><span class="tag b'+esc(s.block)+'">Block '+esc(s.block)+'</span></td><td>'+esc(s.room)+'</td>'
+      +'<td>'+esc(s.roomType||'—')+'</td>'
+      +'<td>'+esc(s.phone||'—')+'</td><td>'+esc(s.guardian||'—')+'</td>'
+      +'<td>••••</td>'
+      +'<td><div class="actions"><button class="btn ghost sm" onclick="openEdit(\''+s.id+'\')">Edit</button>'
+      +'<button class="btn danger sm" onclick="delStudent(\''+s.id+'\')">Del</button></div></td>';
+    body.appendChild(tr);
+  });
+}
+function loadStudents(){ api('/api/students').then(function(d){ students=d.students; renderRecords(); }).catch(toastErr); }
+
+function openAdd(){
+  document.getElementById('modalTitle').textContent='Add Student';
+  document.getElementById('studentForm').reset();
+  delete document.getElementById('studentForm').dataset.id;
+  document.getElementById('submitBtn').textContent='Save';
+  document.getElementById('deleteBtn').classList.add('hidden');
+  document.getElementById('fPin').required=true;
+  showModal();
+}
+function openEdit(id){
+  var s=students.find(function(x){return x.id===id;}); if(!s) return;
+  document.getElementById('modalTitle').textContent='Edit Student — '+s.name;
+  document.getElementById('fName').value=s.name; document.getElementById('fReg').value=s.reg;
+  document.getElementById('fBlock').value=String(s.block); document.getElementById('fRoom').value=s.room;
+  document.getElementById('fRoomType').value=s.roomType||'';
+  document.getElementById('fPhone').value=s.phone||''; document.getElementById('fGuardian').value=s.guardian||'';
+  document.getElementById('fGuardianPhone').value=s.guardianPhone||''; document.getElementById('fPin').value='';
+  document.getElementById('studentForm').dataset.id=id;
+  document.getElementById('submitBtn').textContent='Save Changes';
+  document.getElementById('deleteBtn').classList.remove('hidden');
+  document.getElementById('fPin').required=false;
+  showModal();
+}
+document.getElementById('studentForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  var id=this.dataset.id;
+  var body={ name:val('fName'), reg:val('fReg'), block:val('fBlock'), room:val('fRoom'), roomType:val('fRoomType'),
+    phone:val('fPhone'), guardian:val('fGuardian'), guardianPhone:val('fGuardianPhone') };
+  if(val('fPin')) body.pin=val('fPin');
+  var p = id ? api('/api/students/'+id,{method:'PUT',body:body}) : api('/api/students',{method:'POST',body:body});
+  p.then(function(){ toast(id?'Student updated.':'Student added.'); closeModal(); loadStudents(); })
+   .catch(toastErr);
+});
+function delStudent(){
+  var id=document.getElementById('studentForm').dataset.id;
+  if(!id) return;
+  if(!confirm('Delete this student record permanently?')) return;
+  api('/api/students/'+id,{method:'DELETE'}).then(function(){ toast('Student deleted.'); closeModal(); loadStudents(); }).catch(toastErr);
+}
+function showModal(){ document.getElementById('modalBg').classList.remove('hidden'); document.getElementById('modalBg').style.display='flex'; }
+function closeModal(){ document.getElementById('modalBg').classList.add('hidden'); document.getElementById('modalBg').style.display='none'; }
+function val(id){ return document.getElementById(id).value.trim(); }
+
+/* ---------------- Overseer: reports ---------------- */
+var reports=[];
+function loadReports(){ api('/api/reports').then(function(d){ reports=d.reports; renderReports(); }).catch(toastErr); }
+function renderReports(){
+  var el=document.getElementById('reportsList');
+  var empty=document.getElementById('reportsEmpty');
+  el.innerHTML='';
+  if(!reports.length){ empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+  reports.forEach(function(r){
+    var when=new Date(r.date).toLocaleDateString()+' '+new Date(r.date).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    var urg = r.urg==='Emergency' ? '<span class="tag" style="background:var(--red-l);color:var(--red);">🚨 Emergency</span>'
+      : r.urg==='Urgent' ? '<span class="tag" style="background:#fff3e0;color:#e65100;">🔴 Urgent</span>'
+      : '<span class="tag" style="background:#eef2f0;color:var(--muted);">Normal</span>';
+    var st = r.status==='done' ? '<span class="tag done">Resolved</span>' : '<span class="tag open">Open</span>';
+    el.innerHTML += '<div class="report"><div class="top"><div>'+urg+' '+st+'</div><span class="when">'+when+'</span></div>'
+      +'<div class="who">'+esc(r.name)+' <span style="color:var(--muted);font-weight:400;">· '+esc(r.reg)+'</span></div>'
+      +'<p>'+esc(r.msg)+'</p>'
+      +'<div class="hint" style="margin-top:0;">📍 Block '+esc(r.block||'—')+' · Room '+esc(r.room||'—')+' · WhatsApp '+esc(r.phone||'—')+'</div>'
+      +'<div class="actions" style="margin-top:8px;">'
+      +'<button class="btn wa sm" onclick="waReply(\''+r.id+'\')">💬 Reply via WhatsApp</button>'
+      +'<button class="btn ghost sm" onclick="toggleReport(\''+r.id+'\')">'+(r.status==='done'?'Reopen':'Mark Resolved')+'</button>'
+      +'<button class="btn danger sm" onclick="delReport(\''+r.id+'\')">Delete</button></div></div>';
+  });
+}
+function waReply(id){
+  var r=reports.find(function(x){return x.id===id;}); if(!r) return;
+  var num=waNum(r.phone); if(!num){ toast('This report has no WhatsApp number.'); return; }
+  var txt='Hello '+r.name+', this is '+OVERSEER_NAME+' (Overseer, Usambara Male Hostels). Regarding your report ('+(r.block?'Block '+r.block+(r.room?', Room '+r.room:''):'')+'): "'+r.msg+'" — [type your response here].';
+  openWa(num,txt);
+}
+function toggleReport(id){
+  var r=reports.find(function(x){return x.id===id;}); if(!r) return;
+  api('/api/reports/'+id,{method:'PUT',body:{status:r.status==='done'?'open':'done'}})
+    .then(loadReports).catch(toastErr);
+}
+function delReport(id){
+  if(!confirm('Delete this report?')) return;
+  api('/api/reports/'+id,{method:'DELETE'}).then(loadReports).catch(toastErr);
+}
+
+/* ---------------- Reviews ---------------- */
+var reviews = [];
+var currentRating = 0;
+
+function setRating(n){
+  currentRating = n;
+  var box = document.getElementById('starInput');
+  var stars = box.getElementsByTagName('span');
+  for(var i=0;i<stars.length;i++){
+    stars[i].textContent = i < n ? '★' : '☆';
+  }
+  document.getElementById('ratingLabel').textContent = n + ' star' + (n===1?'':'s');
+}
+function hideRevErr(){ document.getElementById('revError').classList.add('hidden'); }
+
+function starHtml(n){
+  var out = '';
+  for(var i=1;i<=5;i++){ out += i<=n ? '★' : '☆'; }
+  return out;
+}
+
+function loadReviews(){
+  api('/api/reviews').then(function(d){
+    reviews = d.reviews;
+    document.getElementById('avgRating').textContent = d.average;
+    document.getElementById('avgStars').textContent = starHtml(Math.round(d.average));
+    document.getElementById('avgCount').textContent = 'based on ' + d.count + ' review' + (d.count===1?'':'s');
+    var el = document.getElementById('reviewsList');
+    var empty = document.getElementById('reviewsEmpty');
+    el.innerHTML = '';
+    if(!reviews.length){ empty.classList.remove('hidden'); return; }
+    empty.classList.add('hidden');
+    reviews.forEach(function(r){
+      var when = new Date(r.date).toLocaleDateString();
+      var del = (role==='overseer') ? '<button class="btn danger sm" onclick="delReview(\''+r.id+'\')">Delete</button>' : '';
+      el.innerHTML += '<div class="report"><div class="top">'
+        + '<div><span class="tag done">'+starHtml(r.rating)+'</span></div>'
+        + '<span class="when">'+when+'</span></div>'
+        + '<div class="who">'+esc(r.name)+'</div>'
+        + '<p>'+esc(r.comment)+'</p>'
+        + (del ? '<div class="actions" style="margin-top:6px;">'+del+'</div>' : '')
+        + '</div>';
+    });
+  }).catch(toastErr);
+}
+
+function submitReview(){
+  hideRevErr();
+  var comment = document.getElementById('revComment').value.trim();
+  if(!currentRating){ showRevErr('Please select a star rating (1–5).'); return; }
+  if(!comment){ showRevErr('Please write a short comment.'); return; }
+  api('/api/reviews', { method:'POST', body:{ rating: currentRating, comment: comment } })
+    .then(function(){
+      toast('Thank you for your review! ⭐');
+      document.getElementById('revComment').value='';
+      setRating(0);
+      document.getElementById('ratingLabel').textContent = 'Select 1–5 stars';
+      loadReviews();
+    }).catch(function(err){ showRevErr(err.message); });
+}
+function showRevErr(msg){ var e=document.getElementById('revError'); e.textContent=msg; e.classList.remove('hidden'); }
+function delReview(id){
+  if(!confirm('Delete this review?')) return;
+  api('/api/reviews/'+id,{method:'DELETE'}).then(loadReviews).catch(toastErr);
+}
+
+/* ---------------- Overseer: change password ---------------- */
+document.getElementById('changePassForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  api('/api/overseer/password',{method:'PUT',body:{current:val('curPass'),next:val('newPass')}})
+    .then(function(){ toast('Password changed.'); document.getElementById('changePassForm').reset(); })
+    .catch(toastErr);
+});
+
+/* ---------------- Backup / export ---------------- */
+function backup(){
+  api('/api/students').then(function(sd){ return api('/api/reports').then(function(rd){ return {students:sd.students, reports:rd.reports}; }); })
+    .then(function(data){
+      var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+      dl(blob,'usambara-backup-'+new Date().toISOString().slice(0,10)+'.json');
+    }).catch(toastErr);
+}
+function exportCSV(){
+  var rows=[['Name','RegNo','Block','Room','Phone','Guardian','GuardianPhone']];
+  students.forEach(function(s){ rows.push([s.name,s.reg,s.block,s.room,s.phone,s.guardian,s.guardianPhone]); });
+  var csv=rows.map(function(r){return r.map(function(c){return '"'+String(c||'').replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+  dl(new Blob([csv],{type:'text/csv'}),'usambara-students.csv');
+}
+function dl(blob,file){ var a=document.createElement('a');var u=URL.createObjectURL(blob);a.href=u;a.download=file;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(u);a.remove();},200); }
+
+/* ---------------- Utils ---------------- */
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(function(){t.classList.remove('show');},2400); }
+function toastErr(err){ toast(err.message||'Something went wrong'); }
+
+/* ---------------- Init ---------------- */
+probeServer(); // sets serverReachable + shows offline banner if unreachable
+boot();
+</script>
+</body>
+</html>

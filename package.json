@@ -1,0 +1,16 @@
+{
+  "name": "usambara-hostel-live",
+  "version": "1.0.0",
+  "description": "Usambara Male Hostels - secure live student records & reporting system",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "mongodb": "^6.8.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
